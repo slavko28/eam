@@ -1,7 +1,7 @@
 **EAM**
 
 Steps to launch
-1. Prepare .jar files in each service  
+1. Prepare .jar files in each repo  
 	`mvn pakage`
 2. Set your AWS credentials into docker-compose.yml 
 	here `aws_access_key` and here `aws_secret_key`
