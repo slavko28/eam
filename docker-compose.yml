@@ -1,0 +1,35 @@
+version: "3"
+networks: 
+    eureka_network:
+        driver: bridge
+services: 
+    registry:
+        build: demo-eureka-server/
+        ports: 
+            - 8761:8761
+        networks: 
+            - eureka_network
+        command: java -jar registry.jar
+    sns_service:
+        build: amazon_services_demo/
+        depends_on: 
+            - registry
+        networks: 
+            - eureka_network
+        environment: 
+            AWS_ACCESS_KEY: aws_access_key
+            AWS_SECRET_KEY: aws_secret_key
+            EUREKA_URI: http://registry:8761/eureka
+        command: java -jar service.jar
+    client:
+        build: demo-sns-feign-client/
+        ports: 
+            - 8080:8080
+        depends_on: 
+            - registry
+        networks:
+            - eureka_network
+        environment: 
+            EUREKA_URI: http://registry:8761/eureka
+        command: java -jar client.jar
+        

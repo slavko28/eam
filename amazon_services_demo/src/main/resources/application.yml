@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: demo-amazon-service
+server:
+  port: 0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+
+logging:
+  level:
+    com.demo: DEBUG
+  file: ./logs/app.log
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region.static: us-east-2
+    stack.auto: false
+
+info:
+  app:
+    name: spring-cloud-eureka-client
+    description: Spring boot application with eureka client implementation
+    version: 0.0.1-SNAPSHOT
