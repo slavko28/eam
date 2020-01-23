@@ -2,7 +2,14 @@ spring:
   application:
     name: demo-amazon-service
 server:
-  port: 0
+  port: 18080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
 eureka:
   client:
     serviceUrl:
@@ -28,3 +35,6 @@ info:
     name: spring-cloud-eureka-client
     description: Spring boot application with eureka client implementation
     version: 0.0.1-SNAPSHOT
+
+kafka:
+  servers: ${KAFKA_BOOTSTRAP_SERVER_LIST:http://localhost:2181}
