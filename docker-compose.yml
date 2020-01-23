@@ -2,34 +2,81 @@ version: "3"
 networks: 
     eureka_network:
         driver: bridge
-services: 
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+services:
+    zookeeper:
+        image: wurstmeister/zookeeper
+        ports:
+            - "2181:2181"
+        networks:
+            - eureka_network
+    kafka:
+        image: wurstmeister/kafka
+        ports:
+            - "9092:9092"
+        networks:
+            - eureka_network
+        environment:
+            KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        depends_on:
+            - zookeeper
     registry:
         build: demo-eureka-server/
-        ports: 
-            - 8761:8761
+        ports:
+            - "8761:8761"
         networks: 
             - eureka_network
         command: java -jar registry.jar
-    sns_service:
+    sns-service:
         build: amazon_services_demo/
-        depends_on: 
-            - registry
-        networks: 
+        networks:
             - eureka_network
         environment: 
             AWS_ACCESS_KEY: aws_access_key
             AWS_SECRET_KEY: aws_secret_key
             EUREKA_URI: http://registry:8761/eureka
+            KAFKA_BOOTSTRAP_SERVER_LIST: http://zookeeper:2181
         command: java -jar service.jar
+        depends_on:
+            - registry
     client:
         build: demo-sns-feign-client/
-        ports: 
-            - 8080:8080
-        depends_on: 
-            - registry
+        ports:
+            - "8080:8080"
         networks:
             - eureka_network
         environment: 
             EUREKA_URI: http://registry:8761/eureka
         command: java -jar client.jar
-        
+        depends_on:
+            - registry
+    prometheus:
+        image: prom/prometheus:v2.15.2
+        volumes:
+            - ./prometheus:/etc/prometheus/
+            - prometheus_data:/prometheus
+        command:
+            - --config.file=/etc/prometheus/prometheus.yml
+        ports:
+            - "9090:9090"
+        networks:
+            - eureka_network
+        restart: unless-stopped
+    grafana:
+        image: grafana/grafana:latest
+        depends_on:
+            - prometheus
+        ports:
+            - "3000:3000"
+        networks:
+            - eureka_network
+        volumes:
+            - ./grafana:/var/lib/grafana
+            - ./grafana/provisioning/:/etc/grafana/provisioning/
