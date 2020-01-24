@@ -1,8 +1,8 @@
 spring:
   application:
-    name: demo-amazon-service
+    name: success-consumer
 server:
-  port: 18080
+  port: 0
 
 management:
   endpoints:
@@ -17,25 +17,12 @@ eureka:
   instance:
     preferIpAddress: true
 
-logging:
-  level:
-    com.demo: DEBUG
-  file: ./logs/app.log
-
-cloud:
-  aws:
-    credentials:
-      accessKey: ${AWS_ACCESS_KEY}
-      secretKey: ${AWS_SECRET_KEY}
-    region.static: us-east-2
-    stack.auto: false
-
 info:
   app:
-    name: spring-cloud-eureka-client
+    name: success-consumer
     description: Spring boot application with eureka client implementation
     version: 0.0.1-SNAPSHOT
 
 kafka:
   servers: ${KAFKA_BOOTSTRAP_SERVER_LIST:http://localhost:9092}
-  topic: ${PUBLISH_INTO_KAFKA_TOPIC:from_sqs}
+  groupId: ${KAFKA_CONSUMER_GROUP_ID:1}

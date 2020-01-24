@@ -45,6 +45,8 @@ services:
             KAFKA_BOOTSTRAP_SERVER_LIST: http://zookeeper:2181
         command: java -jar service.jar
         depends_on:
+            - zookeeper
+            - kafka
             - registry
     client:
         build: demo-sns-feign-client/
@@ -57,6 +59,27 @@ services:
         command: java -jar client.jar
         depends_on:
             - registry
+            - sns-service
+    router:
+        build: router/
+        networks:
+            - eureka_network
+        environment:
+            EUREKA_URI: http://registry:8761/eureka
+            KAFKA_BOOTSTRAP_SERVER_LIST: http://kafka:9092
+        command: java -jar router.jar
+        depends_on:
+            - sns-service
+    success-consumer:
+        build: success/
+        networks:
+            - eureka_network
+        environment:
+            EUREKA_URI: http://registry:8761/eureka
+            KAFKA_BOOTSTRAP_SERVER_LIST: http://kafka:9092
+        command: java -jar success-consumer.jar
+        depends_on:
+            - sns-service
     prometheus:
         image: prom/prometheus:v2.15.2
         volumes:

@@ -1,5 +1,7 @@
 package com.discovery.feign_client.controller;
 
+import com.discovery.feign_client.model.Message;
+import com.discovery.feign_client.service.SNSTopicClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,11 @@ public class FeignController {
     @GetMapping(value = "/client/topics")
     public List<String> getTopicList() {
         return snsTopicClientService.getTopicList();
+    }
+
+    @PutMapping(value = "/client/publish")
+    public String publishMessage(@RequestParam String message, @RequestParam String topicArn) {
+        return snsTopicClientService.publishMessage(new Message(message, topicArn));
     }
 
     @PostMapping(value = "/client/create/topic")
