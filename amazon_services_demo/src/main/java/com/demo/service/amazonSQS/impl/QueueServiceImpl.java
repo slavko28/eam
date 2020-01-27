@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class QueueServiceImpl implements QueueService {
 
-//    @Autowired
-//    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Value("${kafka.topic}")
     private String kafkaTopic;
@@ -22,7 +22,7 @@ public class QueueServiceImpl implements QueueService {
     @SqsListener("my_from_sns")
     public void messageHandler(String message, @Header("SenderId") String senderId) {
         log.info("received message from sender id:{}\nMessage:\n{}", senderId, message);
-//        kafkaTemplate.send(kafkaTopic, message);
+        kafkaTemplate.send(kafkaTopic, message);
     }
 
 }

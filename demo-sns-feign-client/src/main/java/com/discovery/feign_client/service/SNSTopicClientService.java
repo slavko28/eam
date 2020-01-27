@@ -2,6 +2,7 @@ package com.discovery.feign_client.service;
 
 import com.discovery.feign_client.model.Message;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,6 +20,6 @@ public interface SNSTopicClientService {
     @RequestMapping(value = "/delete/topic")
     String removeTopic(String topicArm);
 
-    @RequestMapping(value = "/publish")
+    @PutMapping(value = "/publish")
     String publishMessage(@RequestBody Message message);
 }
